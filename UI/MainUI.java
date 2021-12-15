@@ -62,8 +62,8 @@ public class MainUI extends JFrame {
 
             @Override
             public boolean canImport(JComponent comp, DataFlavor[] flavors) {
-                for (int i = 0; i < flavors.length; i++) {
-                    if (DataFlavor.javaFileListFlavor.equals(flavors[i])) {
+                for (DataFlavor flavor : flavors) {
+                    if (DataFlavor.javaFileListFlavor.equals(flavor)) {
                         return true;
                     }
                 }
@@ -73,29 +73,26 @@ public class MainUI extends JFrame {
         // 设置进度条最大值
         progressBar.setMaximum(100);
         // 按钮“加密 / 解密”的点击事件
-        btnEncryptDecrypt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                btnEncryptDecrypt.setEnabled(false);
-                String a = textFilePath.getText(), b = textKey.getText();
-                // 检测两个文本框到底有没有写东西
-                if (a.isEmpty() || b.isEmpty()) {
-                    // 没写就提示
-                    if (lblStatus.getText().length() == 20)
-                        return;
-                    if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
-                        lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
-                        btnEncryptDecrypt.setEnabled(true);
-                    } else {
-                        lblStatus.setText("请先输入文件路径和密钥。");
-                        btnEncryptDecrypt.setEnabled(true);
-                    }
+        btnEncryptDecrypt.addActionListener(e -> {
+            btnEncryptDecrypt.setEnabled(false);
+            String a = textFilePath.getText(), b = textKey.getText();
+            // 检测两个文本框到底有没有写东西
+            if (a.isEmpty() || b.isEmpty()) {
+                // 没写就提示
+                if (lblStatus.getText().length() == 20)
+                    return;
+                if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
+                    lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
+                    btnEncryptDecrypt.setEnabled(true);
                 } else {
-                    // 写了就开始运行加解密
-                    new BackRunnerCrypt().start();
+                    lblStatus.setText("请先输入文件路径和密钥。");
+                    btnEncryptDecrypt.setEnabled(true);
                 }
-                lblStatus.requestFocus();
+            } else {
+                // 写了就开始运行加解密
+                new BackRunnerCrypt().start();
             }
+            lblStatus.requestFocus();
         });
         // 显示灰色提示消息
         textFilePath.addFocusListener(new FocusListener() {
@@ -122,24 +119,16 @@ public class MainUI extends JFrame {
             }
         });
         // 密钥输入框回车开始加解密
-        textKey.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                btnEncryptDecrypt.doClick();
-            }
-        });
+        textKey.addActionListener(e -> btnEncryptDecrypt.doClick());
         // 按钮”随机“的点击事件
-        btnGenerateRandomKey.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SecureRandom rd = new SecureRandom();
-                String myAscii = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-                StringBuilder keyStr = new StringBuilder();
-                for (int i = 0; i < 16; i++) {
-                    keyStr.append(myAscii.charAt(rd.nextInt(62)));
-                }
-                textKey.setText(keyStr.toString());
+        btnGenerateRandomKey.addActionListener(e -> {
+            SecureRandom rd = new SecureRandom();
+            String myAscii = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            StringBuilder keyStr = new StringBuilder();
+            for (int i = 0; i < 16; i++) {
+                keyStr.append(myAscii.charAt(rd.nextInt(62)));
             }
+            textKey.setText(keyStr.toString());
         });
         // 边框设置
         LineBorder border = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
@@ -151,13 +140,7 @@ public class MainUI extends JFrame {
         // 修改窗口风格为当前系统对应的风格
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (UnsupportedLookAndFeelException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
         // 显示窗口
@@ -172,12 +155,11 @@ public class MainUI extends JFrame {
         textKey.requestFocusInWindow();
     }
 
-
+    /**
+     * 用于后台运行加解密
+     */
     class BackRunnerCrypt implements Runnable {
         private Thread t;
-
-        public BackRunnerCrypt() {
-        }
 
         public void start() {
             t = new Thread(this);
@@ -207,6 +189,9 @@ public class MainUI extends JFrame {
 
         }
 
+        /**
+         * 控制进度条的显示
+         */
         class BackRunnerShowProgress implements Runnable {
             private Thread t;
 
@@ -339,6 +324,9 @@ public class MainUI extends JFrame {
         return mainPanel;
     }
 
+    /**
+     * Swing GUI设计器生成代码：自定义组件初始化，我这里用于设置背景图
+     */
     private void createUIComponents() {
         Image image = new ImageIcon(this.getClass().getResource("Curve.png")).getImage();
         mainPanel = new JPanel() {
