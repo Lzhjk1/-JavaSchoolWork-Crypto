@@ -15,11 +15,18 @@ public class TextBorderUtlis extends LineBorder
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * 构造函数
+     * @param color 颜色
+     * @param thickness 厚度
+     * @param roundedCorners 圆角
+     */
     public TextBorderUtlis(Color color, int thickness, boolean roundedCorners)
     {
         super(color, thickness, roundedCorners);
     }
 
+    @Override
     public void paintBorder(Component c, Graphics g, int x, int y, int width, int height)
     {
 

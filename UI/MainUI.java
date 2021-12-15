@@ -6,7 +6,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.text.StyleContext;
@@ -16,19 +15,17 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 public class MainUI extends JFrame {
     private JPanel mainPanel; // 主Panel
+    private JPanel panelKey; // 密钥输入框所属Panel
     private JTextField textFilePath;// 文件路径文本框
     private JTextField textKey; // 密钥文本框
     private JButton btnEncryptDecrypt; // 加解密按钮
+    private JButton btnGenerateRandomKey;
     private JProgressBar progressBar; // 进度条
     private JLabel lblStatus; // 状态Label
-    private JButton btnGenerateRandomKey;
-    private JPanel panelKey;
 
     private final Crypto crypto = new Crypto(); // Crypto类的唯一实例
 
@@ -152,7 +149,6 @@ public class MainUI extends JFrame {
         btnGenerateRandomKey.setBorder(border);
         progressBar.setBorder(border);
         btnEncryptDecrypt.setBorder(new TextBorderUtlis(new Color(70, 70, 70), 5, false));
-
         // 修改窗口风格为当前系统对应的风格
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -176,6 +172,7 @@ public class MainUI extends JFrame {
         textKey.dispatchEvent(new FocusEvent(textKey, FocusEvent.FOCUS_GAINED, true));
         textKey.requestFocusInWindow();
     }
+
 
     class BackRunnerCrypt implements Runnable {
         private Thread t;
@@ -345,9 +342,9 @@ public class MainUI extends JFrame {
     }
 
     private void createUIComponents() {
-        // TODO: place custom component creation code here
+        Image image = new ImageIcon(this.getClass().getResource("Curve.png")).getImage();
         mainPanel = new JPanel() {
-            Image image = new ImageIcon("Curve.png").getImage();
+//            Image image = new ImageIcon("Curve.png").getImage();
 
             @Override
             public void paintComponent(Graphics g) {
@@ -355,7 +352,7 @@ public class MainUI extends JFrame {
             }
         };
         panelKey = new JPanel() {
-            Image image = new ImageIcon("Curve.png").getImage();
+//            Image image = new ImageIcon("Curve.png").getImage();
 
             @Override
             public void paintComponent(Graphics g) {

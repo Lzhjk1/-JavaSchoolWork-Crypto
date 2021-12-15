@@ -1,19 +1,9 @@
 package Core;
 
-import UI.A;
-
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-class B extends A{
-    B(){
-       int x =a;
-       float y=1F;
-    }
-}
 
 public class Crypto {
     private String filePath; // 文件路径
