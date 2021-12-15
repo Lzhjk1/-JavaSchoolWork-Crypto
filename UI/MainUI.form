@@ -17,7 +17,7 @@
         <properties>
           <background color="-13487566"/>
           <foreground color="-7629154"/>
-          <text value=""/>
+          <text value="支持拖拽文件至此"/>
         </properties>
       </component>
       <component id="33be" class="javax.swing.JLabel">

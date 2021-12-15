@@ -86,8 +86,7 @@ public class MainUI extends JFrame {
                     if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
                         lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
                         btnEncryptDecrypt.setEnabled(true);
-                    }
-                    else {
+                    } else {
                         lblStatus.setText("请先输入文件路径和密钥。");
                         btnEncryptDecrypt.setEnabled(true);
                     }
@@ -104,7 +103,7 @@ public class MainUI extends JFrame {
             public void focusGained(FocusEvent e) {
                 //获取焦点时，清空提示内容
                 String temp = textFilePath.getText();
-                if (temp.equals("支持拖拽文件至窗口内")) {
+                if (temp.equals("支持拖拽文件至此")) {
                     textFilePath.setText("");
                     textFilePath.setForeground(new Color(139, 150, 158));
                 }
@@ -117,7 +116,7 @@ public class MainUI extends JFrame {
                 String temp = textFilePath.getText();
                 if (temp.equals("")) {
                     textFilePath.setForeground(Color.GRAY);
-                    textFilePath.setText("支持拖拽文件至窗口内");
+                    textFilePath.setText("支持拖拽文件至此");
                 }
 
             }
@@ -199,8 +198,7 @@ public class MainUI extends JFrame {
                 e.printStackTrace();
                 lblStatus.setText("错误：" + e.getMessage());
                 isError = true;
-            }
-            finally {
+            } finally {
                 if (!isError)
                     lblStatus.setText("成功。");
                 btnEncryptDecrypt.setEnabled(true);
@@ -256,7 +254,7 @@ public class MainUI extends JFrame {
         textFilePath = new JTextField();
         textFilePath.setBackground(new Color(-13487566));
         textFilePath.setForeground(new Color(-7629154));
-        textFilePath.setText("");
+        textFilePath.setText("支持拖拽文件至此");
         mainPanel.add(textFilePath, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 30), null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setForeground(new Color(-7629154));
