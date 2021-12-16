@@ -1,0 +1,16 @@
+Crypto
+
+Version 0.1.2
+
+Powered by Java / Intellj IDEA
+
+Lzhjk Presented
+
+
+
+加密算法：
+    密钥字符串的hashCode作为Random类的种子
+    对文件的每一个字节，取五次随机值对其进行异或运算
+    利用Random的伪随机数特性和异或运算的可逆性
+    缺陷很明显
+    简单的异或运算以及字符串生成哈希值可能的重复问题

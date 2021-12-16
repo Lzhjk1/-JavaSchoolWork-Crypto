@@ -13,6 +13,12 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -36,7 +42,7 @@ public class MainUI extends JFrame {
         // Swing GUI编辑器生成代码
         $$$setupUI$$$();
         // 添加一个顶部菜单栏
-        Font font = new Font("Microsoft YaHei", Font.PLAIN, 10);
+        Font font = new Font("Microsoft YaHei", Font.PLAIN, 12);
         Color fontColor = new Color(139, 150, 158);
         Color backColor = new Color(50, 50, 50);
         TextBorderUtlis border = new TextBorderUtlis(backColor, 2, false);
@@ -62,7 +68,48 @@ public class MainUI extends JFrame {
         setJMenuBar(menuBar);
         // 设置菜单栏各事件
         menuItemAbout.addActionListener(e -> {
-            // TODO: 添加菜单的事件
+            // 读取About.txt内的说明信息
+            String strAbout = "";
+            try {
+                String path = Objects.requireNonNull(getClass().getResource("Resource/About.txt")).getPath();
+                BufferedReader reader = new BufferedReader(new FileReader(path));
+                StringBuilder sb = new StringBuilder();
+                String tmp = "";
+                while ((tmp = reader.readLine()) != null) {
+                    sb.append(tmp + "\n");
+                }
+                strAbout = sb.toString();
+                reader.close();
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            // 创建窗口
+            JFrame frame = new JFrame("关于");
+            JPanel panel = new JPanel(new BorderLayout());
+            JTextPane text = new JTextPane();
+            JScrollPane scrollPane = new JScrollPane(text);
+            panel.add(scrollPane, BorderLayout.CENTER);
+            text.setBackground(new Color(70, 70, 70));
+            text.setForeground(new Color(139, 150, 158));
+            text.setFont(font);
+            text.setEditable(false);
+            String finalStrAbout = strAbout;
+            new Thread(() -> {
+                for (int i = 0; i < finalStrAbout.length(); i++) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    text.setText(text.getText() + finalStrAbout.charAt(i));
+                }
+            }).start();
+
+            frame.setContentPane(panel);
+            frame.setBounds(100, 100, 420, 500);
+            frame.setVisible(true);
         });
         // 拖入文件的事件
         textFilePath.setTransferHandler(new TransferHandler() {
@@ -163,10 +210,10 @@ public class MainUI extends JFrame {
         });
         // 边框设置
         LineBorder border2 = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
-        textFilePath.setBorder(border);
-        textKey.setBorder(border);
-        btnGenerateRandomKey.setBorder(border);
-        progressBar.setBorder(border);
+        textFilePath.setBorder(border2);
+        textKey.setBorder(border2);
+        btnGenerateRandomKey.setBorder(border2);
+        progressBar.setBorder(border2);
         btnEncryptDecrypt.setBorder(new TextBorderUtlis(new Color(70, 70, 70), 5, false));
         // 修改窗口风格为当前系统对应的风格
         try {
@@ -354,7 +401,7 @@ public class MainUI extends JFrame {
      * Swing GUI设计器生成代码：自定义组件初始化，我这里用于设置背景图
      */
     private void createUIComponents() {
-        Image image = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("Curve.png"))).getImage();
+        Image image = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("Resource/Bg.png"))).getImage();
         mainPanel = new JPanel() {
             @Override
             public void paintComponent(Graphics g) {
