@@ -20,14 +20,12 @@ import java.util.*;
 public class MainUI extends JFrame {
     private JPanel mainPanel; // 主Panel
     private JPanel panelKey; // 密钥输入框所属Panel
-    private JTextField textFilePath;// 文件路径文本框
-    private JTextField textKey; // 密钥文本框
+    private JLabel lblStatus; // 状态Label
     private JButton btnEncryptDecrypt; // 加解密按钮
     private JButton btnGenerateRandomKey;
+    private JTextField textFilePath;// 文件路径文本框
+    private JTextField textKey; // 密钥文本框
     private JProgressBar progressBar; // 进度条
-    private JLabel lblStatus; // 状态Label
-    private JMenu menuAbout; // 关于
-    private JMenuItem menuItemAbout; // 关于
 
     private final Crypto crypto = new Crypto(); // Crypto类的唯一实例
 
@@ -44,29 +42,29 @@ public class MainUI extends JFrame {
         TextBorderUtlis border = new TextBorderUtlis(backColor, 2, false);
         // 顶部菜单栏
         JMenuBar menuBar = new JMenuBar();
-        menuBar.add(menuAbout);
-        menuBar.setBackground(backColor);
-        menuBar.setBorder(border);
+        JMenu menuAbout = new JMenu("关于");
+        JMenuItem menuItemAbout = new JMenuItem("关于");
 
-        menuAbout = new JMenu("About");
         menuAbout.setFont(font);
         menuAbout.setForeground(fontColor);
         menuAbout.add(menuItemAbout);
         menuAbout.setBackground(backColor);
         menuAbout.setBorder(border);
 
-        menuItemAbout = new JMenuItem("About");
         menuItemAbout.setFont(font);
         menuItemAbout.setForeground(fontColor);
         menuItemAbout.setBackground(backColor);
         menuItemAbout.setBorder(border);
 
+        menuBar.add(menuAbout);
+        menuBar.setBackground(backColor);
+        menuBar.setBorder(border);
         setJMenuBar(menuBar);
         // 设置菜单栏各事件
         menuItemAbout.addActionListener(e -> {
             // TODO: 添加菜单的事件
         });
-        // 拖入文件的事件(对主要面板和输入框都设置以达到只要文件拖入窗口就能导入的效果)
+        // 拖入文件的事件
         textFilePath.setTransferHandler(new TransferHandler() {
             @Override
             public boolean importData(JComponent comp, Transferable t) {
