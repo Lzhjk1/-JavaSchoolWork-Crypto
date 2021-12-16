@@ -26,6 +26,8 @@ public class MainUI extends JFrame {
     private JButton btnGenerateRandomKey;
     private JProgressBar progressBar; // 进度条
     private JLabel lblStatus; // 状态Label
+    private JMenu menuAbout; // 关于
+    private JMenuItem menuItemAbout; // 关于
 
     private final Crypto crypto = new Crypto(); // Crypto类的唯一实例
 
@@ -35,6 +37,35 @@ public class MainUI extends JFrame {
     public MainUI() {
         // Swing GUI编辑器生成代码
         $$$setupUI$$$();
+        // 添加一个顶部菜单栏
+        Font font = new Font("Microsoft YaHei", Font.PLAIN, 10);
+        Color fontColor = new Color(139, 150, 158);
+        Color backColor = new Color(50, 50, 50);
+        TextBorderUtlis border = new TextBorderUtlis(backColor, 2, false);
+        // 顶部菜单栏
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(menuAbout);
+        menuBar.setBackground(backColor);
+        menuBar.setBorder(border);
+
+        menuAbout = new JMenu("About");
+        menuAbout.setFont(font);
+        menuAbout.setForeground(fontColor);
+        menuAbout.add(menuItemAbout);
+        menuAbout.setBackground(backColor);
+        menuAbout.setBorder(border);
+
+        menuItemAbout = new JMenuItem("About");
+        menuItemAbout.setFont(font);
+        menuItemAbout.setForeground(fontColor);
+        menuItemAbout.setBackground(backColor);
+        menuItemAbout.setBorder(border);
+
+        setJMenuBar(menuBar);
+        // 设置菜单栏各事件
+        menuItemAbout.addActionListener(e -> {
+            // TODO: 添加菜单的事件
+        });
         // 拖入文件的事件(对主要面板和输入框都设置以达到只要文件拖入窗口就能导入的效果)
         textFilePath.setTransferHandler(new TransferHandler() {
             @Override
@@ -77,16 +108,18 @@ public class MainUI extends JFrame {
             btnEncryptDecrypt.setEnabled(false);
             String a = textFilePath.getText(), b = textKey.getText();
             // 检测两个文本框到底有没有写东西
-            if (a.isEmpty() || b.isEmpty()) {
+            if (a.equals("支持拖拽文件至此") || b.isEmpty()) {
                 // 没写就提示
-                if (lblStatus.getText().length() == 20)
+                if (lblStatus.getText().length() == 20) {
+                    btnEncryptDecrypt.setEnabled(true);
                     return;
+                }
                 if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
+                    btnEncryptDecrypt.setEnabled(true);
                     lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
-                    btnEncryptDecrypt.setEnabled(true);
                 } else {
-                    lblStatus.setText("请先输入文件路径和密钥。");
                     btnEncryptDecrypt.setEnabled(true);
+                    lblStatus.setText("请先输入文件路径和密钥。");
                 }
             } else {
                 // 写了就开始运行加解密
@@ -131,7 +164,7 @@ public class MainUI extends JFrame {
             textKey.setText(keyStr.toString());
         });
         // 边框设置
-        LineBorder border = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
+        LineBorder border2 = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
         textFilePath.setBorder(border);
         textKey.setBorder(border);
         btnGenerateRandomKey.setBorder(border);
@@ -159,10 +192,8 @@ public class MainUI extends JFrame {
      * 用于后台运行加解密
      */
     class BackRunnerCrypt implements Runnable {
-        private Thread t;
-
         public void start() {
-            t = new Thread(this);
+            Thread t = new Thread(this);
             t.start();
         }
 
@@ -184,7 +215,6 @@ public class MainUI extends JFrame {
                 if (!isError)
                     lblStatus.setText("成功。");
                 btnEncryptDecrypt.setEnabled(true);
-                t.stop();
             }
 
         }
@@ -193,10 +223,8 @@ public class MainUI extends JFrame {
          * 控制进度条的显示
          */
         class BackRunnerShowProgress implements Runnable {
-            private Thread t;
-
             public void start() {
-                t = new Thread(this);
+                Thread t = new Thread(this);
                 t.start();
             }
 
@@ -213,7 +241,7 @@ public class MainUI extends JFrame {
                     if (progress == 1f) {
                         try {
                             Thread.sleep(500);
-                            t.stop();
+                            break;
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -236,23 +264,31 @@ public class MainUI extends JFrame {
     private void $$$setupUI$$$() {
         createUIComponents();
         mainPanel.setLayout(new GridLayoutManager(8, 3, new Insets(0, 0, 0, 0), -1, -1));
+        Font mainPanelFont = this.$$$getFont$$$("Microsoft YaHei", -1, -1, mainPanel.getFont());
+        if (mainPanelFont != null) mainPanel.setFont(mainPanelFont);
         textFilePath = new JTextField();
         textFilePath.setBackground(new Color(-13487566));
+        Font textFilePathFont = this.$$$getFont$$$("Microsoft YaHei", -1, -1, textFilePath.getFont());
+        if (textFilePathFont != null) textFilePath.setFont(textFilePathFont);
         textFilePath.setForeground(new Color(-7629154));
         textFilePath.setText("支持拖拽文件至此");
         mainPanel.add(textFilePath, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 30), null, 0, false));
         final JLabel label1 = new JLabel();
+        Font label1Font = this.$$$getFont$$$("Microsoft YaHei", -1, -1, label1.getFont());
+        if (label1Font != null) label1.setFont(label1Font);
         label1.setForeground(new Color(-7629154));
         label1.setText("文件路径 :");
         mainPanel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
+        Font label2Font = this.$$$getFont$$$("Microsoft YaHei", -1, -1, label2.getFont());
+        if (label2Font != null) label2.setFont(label2Font);
         label2.setForeground(new Color(-7629154));
         label2.setText("密钥 :");
         mainPanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         btnEncryptDecrypt = new JButton();
         btnEncryptDecrypt.setBackground(new Color(-13487566));
         btnEncryptDecrypt.setEnabled(true);
-        Font btnEncryptDecryptFont = this.$$$getFont$$$(null, -1, 20, btnEncryptDecrypt.getFont());
+        Font btnEncryptDecryptFont = this.$$$getFont$$$("Microsoft YaHei", -1, 20, btnEncryptDecrypt.getFont());
         if (btnEncryptDecryptFont != null) btnEncryptDecrypt.setFont(btnEncryptDecryptFont);
         btnEncryptDecrypt.setForeground(new Color(-7629154));
         btnEncryptDecrypt.setHideActionText(false);
@@ -270,6 +306,8 @@ public class MainUI extends JFrame {
         label4.setText("");
         mainPanel.add(label4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(315, 17), null, 0, false));
         final JLabel label5 = new JLabel();
+        Font label5Font = this.$$$getFont$$$("Microsoft YaHei", -1, -1, label5.getFont());
+        if (label5Font != null) label5.setFont(label5Font);
         label5.setForeground(new Color(-7629154));
         label5.setText("密钥输入完成之后回车也可开始加解密          输出文件将以.cryptxxx的后缀名输出到源文件相同目录下");
         mainPanel.add(label5, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(315, 17), null, 0, false));
@@ -279,16 +317,20 @@ public class MainUI extends JFrame {
         mainPanel.add(panelKey, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(315, 34), null, 0, false));
         textKey = new JTextField();
         textKey.setBackground(new Color(-13487566));
+        Font textKeyFont = this.$$$getFont$$$("Microsoft YaHei", -1, -1, textKey.getFont());
+        if (textKeyFont != null) textKey.setFont(textKeyFont);
         textKey.setForeground(new Color(-7629154));
         textKey.setToolTipText("");
         panelKey.add(textKey, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 30), null, 0, false));
         btnGenerateRandomKey = new JButton();
         btnGenerateRandomKey.setBackground(new Color(-13487566));
+        Font btnGenerateRandomKeyFont = this.$$$getFont$$$("Microsoft YaHei", -1, -1, btnGenerateRandomKey.getFont());
+        if (btnGenerateRandomKeyFont != null) btnGenerateRandomKey.setFont(btnGenerateRandomKeyFont);
         btnGenerateRandomKey.setForeground(new Color(-7629154));
         btnGenerateRandomKey.setText("随机");
         panelKey.add(btnGenerateRandomKey, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         lblStatus = new JLabel();
-        Font lblStatusFont = this.$$$getFont$$$(null, -1, 20, lblStatus.getFont());
+        Font lblStatusFont = this.$$$getFont$$$("Microsoft YaHei", -1, 20, lblStatus.getFont());
         if (lblStatusFont != null) lblStatus.setFont(lblStatusFont);
         lblStatus.setForeground(new Color(-7629154));
         lblStatus.setText("等待命令...");
@@ -328,18 +370,14 @@ public class MainUI extends JFrame {
      * Swing GUI设计器生成代码：自定义组件初始化，我这里用于设置背景图
      */
     private void createUIComponents() {
-        Image image = new ImageIcon(this.getClass().getResource("Curve.png")).getImage();
+        Image image = new ImageIcon(Objects.requireNonNull(this.getClass().getResource("Curve.png"))).getImage();
         mainPanel = new JPanel() {
-//            Image image = new ImageIcon("Curve.png").getImage();
-
             @Override
             public void paintComponent(Graphics g) {
                 g.drawImage(image, 0, 0, mainPanel.getWidth(), mainPanel.getHeight(), mainPanel);
             }
         };
         panelKey = new JPanel() {
-//            Image image = new ImageIcon("Curve.png").getImage();
-
             @Override
             public void paintComponent(Graphics g) {
                 g.drawImage(image, 0, 0, panelKey.getWidth(), panelKey.getHeight(), panelKey);
