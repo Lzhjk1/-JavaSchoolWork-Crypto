@@ -220,7 +220,7 @@ public class MainUI extends JFrame {
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
-        setTitle("Crypto v0.1.2 by LZHJK");
+        setTitle("Crypto v0.1.3 by LZHJK");
         setVisible(true);
         pack();
         // 设置焦点位置
