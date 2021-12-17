@@ -13,10 +13,7 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.SecureRandom;
@@ -71,8 +68,7 @@ public class MainUI extends JFrame {
             // 读取About.txt内的说明信息
             String strAbout = "";
             try {
-                String path = Objects.requireNonNull(getClass().getResource("Resource/About.txt")).getPath();
-                BufferedReader reader = new BufferedReader(new FileReader(path));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("Resource/About.txt")));
                 StringBuilder sb = new StringBuilder();
                 String tmp = "";
                 while ((tmp = reader.readLine()) != null) {
@@ -157,9 +153,8 @@ public class MainUI extends JFrame {
                 // 没写就提示
                 if (lblStatus.getText().length() == 20) {
                     btnEncryptDecrypt.setEnabled(true);
-                    return;
                 }
-                if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
+                else if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
                     btnEncryptDecrypt.setEnabled(true);
                     lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
                 } else {
@@ -222,15 +217,14 @@ public class MainUI extends JFrame {
             e.printStackTrace();
         }
         // 显示窗口
-        setVisible(true);
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
         setTitle("Crypto v0.1.2 by LZHJK");
+        setVisible(true);
         pack();
         // 设置焦点位置
-        textKey.dispatchEvent(new FocusEvent(textKey, FocusEvent.FOCUS_GAINED, true));
-        textKey.requestFocusInWindow();
+        textKey.requestFocus();
     }
 
     /**
