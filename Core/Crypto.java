@@ -5,6 +5,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 加解密类
+ */
 public class Crypto {
     private String filePath; // 文件路径
     private int depth = 5; // 加密深度(指对每个字节进行多少次操作)
@@ -12,16 +15,22 @@ public class Crypto {
     private String encryptedSuffix; // 加上crypt后的后缀名
     private String sourceSuffix; // 原始后缀名
     private boolean isEncrypt = true; // 当前要进行的是什么操作，true为加密，false为解密
-
     // 用于进度显示
     private double fileLength; // 文件总字节数
     private double currentProgress; // 当前已处理的字节数
+
+    public double getFileLength() {
+        return fileLength;
+    }
+    public double getCurrentProgress() {
+        return currentProgress;
+    }
+
     /**
      * 导入参数：filePath:String
      * <p>导入后立刻进行处理<br>
      * 1、文件是否存在<br>
      * 2、提取后缀名<br></p>
-     *
      * @param _filePath 需要加解密的文件路径
      */
     private void filePath(String _filePath) {
@@ -72,26 +81,30 @@ public class Crypto {
         return (float) (currentProgress / fileLength);
     }
 
+
+
     /**
      * Crypto类主要函数，传入参数并开始加解密操作
-     *
      * @param _filePath 文件路径
      * @param keyStr    作为密钥的字符串
+     * @throws Exception 可能有Null,FileNotFound
      */
     public void Crypt(String _filePath, String keyStr) throws Exception{
-        // 录入参数
+        // 录入参数并进行相关处理
         filePath(_filePath);
         key(keyStr);
         //
         File sourceFile = new File(filePath);
+        if(!sourceFile.exists())
+            throw new NullPointerException();
         File outputFile = null;
-        // 确认输出文件的文件名
+        // 确认输出文件的后缀名
         if (isEncrypt) {
             outputFile = new File(filePath.replace(sourceSuffix, "crypt" + sourceSuffix));
         } else {
             outputFile = new File(filePath.replace(encryptedSuffix, sourceSuffix));
         }
-        //
+        // 创建各种流
         InputStream in = null;
         OutputStream out = null;
         if (!outputFile.exists())

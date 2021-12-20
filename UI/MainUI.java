@@ -14,8 +14,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.*;
 
@@ -30,14 +29,16 @@ public class MainUI extends JFrame {
     private JTextField textKey; // 密钥文本框
     private JProgressBar progressBar; // 进度条
 
-    private final Crypto crypto = new Crypto(); // Crypto类的唯一实例
+    private Crypto crypto = new Crypto(); // Crypto类的唯一实例
+
+    public static void main(String[] args) {
+        new MainUI();
+    }
 
     /**
-     * MainUI构造函数，目前主要负责事件添加和设置一些初始值
+     * 用于分散构造函数：给窗口添加菜单栏（包含一个关于按钮）
      */
-    public MainUI() {
-        // Swing GUI编辑器生成代码
-        $$$setupUI$$$();
+    private void addAboutMenu() {
         // 添加一个顶部菜单栏
         Font font = new Font("Microsoft YaHei", Font.PLAIN, 12);
         Color fontColor = new Color(139, 150, 158);
@@ -63,50 +64,34 @@ public class MainUI extends JFrame {
         menuBar.setBackground(backColor);
         menuBar.setBorder(border);
         setJMenuBar(menuBar);
-        // 设置菜单栏各事件
+        // 设置菜单栏”关于“事件
         menuItemAbout.addActionListener(e -> {
-            // 读取About.txt内的说明信息
-            String strAbout = "";
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("Resource/About.txt")));
-                StringBuilder sb = new StringBuilder();
-                String tmp = "";
-                while ((tmp = reader.readLine()) != null) {
-                    sb.append(tmp + "\n");
-                }
-                strAbout = sb.toString();
-                reader.close();
-            } catch (FileNotFoundException ex) {
-                ex.printStackTrace();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-            // 创建窗口
-            JFrame frame = new JFrame("关于");
-            JPanel panel = new JPanel(new BorderLayout());
-            JTextPane text = new JTextPane();
-            JScrollPane scrollPane = new JScrollPane(text);
-            panel.add(scrollPane, BorderLayout.CENTER);
-            text.setBackground(new Color(70, 70, 70));
-            text.setForeground(new Color(139, 150, 158));
-            text.setFont(font);
-            text.setEditable(false);
-            String finalStrAbout = strAbout;
-            new Thread(() -> {
-                for (int i = 0; i < finalStrAbout.length(); i++) {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    text.setText(text.getText() + finalStrAbout.charAt(i));
-                }
-            }).start();
-
-            frame.setContentPane(panel);
-            frame.setBounds(100, 100, 420, 500);
-            frame.setVisible(true);
+            new AboutWindow();
         });
+    }
+
+    /**
+     * 用于分散构造函数：设置组件边框
+     */
+    private void setBorder() {
+        LineBorder border2 = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
+        textFilePath.setBorder(border2);
+        textKey.setBorder(border2);
+        btnGenerateRandomKey.setBorder(border2);
+        progressBar.setBorder(border2);
+        btnEncryptDecrypt.setBorder(new TextBorderUtlis(new Color(70, 70, 70), 5, false));
+    }
+
+    /**
+     * MainUI构造函数，目前主要负责事件添加和设置一些初始值
+     */
+    public MainUI() {
+        // Swing GUI编辑器生成代码
+        $$$setupUI$$$();
+        // 添加菜单栏
+        addAboutMenu();
+        // 设置进度条最大值
+        progressBar.setMaximum(100);
         // 拖入文件的事件
         textFilePath.setTransferHandler(new TransferHandler() {
             @Override
@@ -142,8 +127,6 @@ public class MainUI extends JFrame {
                 return false;
             }
         });
-        // 设置进度条最大值
-        progressBar.setMaximum(100);
         // 按钮“加密 / 解密”的点击事件
         btnEncryptDecrypt.addActionListener(e -> {
             btnEncryptDecrypt.setEnabled(false);
@@ -153,8 +136,7 @@ public class MainUI extends JFrame {
                 // 没写就提示
                 if (lblStatus.getText().length() == 20) {
                     btnEncryptDecrypt.setEnabled(true);
-                }
-                else if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
+                } else if (lblStatus.getText().startsWith("请先输入文件路径和密钥")) {
                     btnEncryptDecrypt.setEnabled(true);
                     lblStatus.setText(lblStatus.getText().replace("。", "") + "！");
                 } else {
@@ -163,7 +145,8 @@ public class MainUI extends JFrame {
                 }
             } else {
                 // 写了就开始运行加解密
-                new BackRunnerCrypt().start();
+                new FX(crypto);
+                new BW_Crypt().start();
             }
             lblStatus.requestFocus();
         });
@@ -198,18 +181,13 @@ public class MainUI extends JFrame {
             SecureRandom rd = new SecureRandom();
             String myAscii = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             StringBuilder keyStr = new StringBuilder();
-            for (int i = 0; i < 16; i++) {
+            for (int i = 0; i < 32; i++) {
                 keyStr.append(myAscii.charAt(rd.nextInt(62)));
             }
             textKey.setText(keyStr.toString());
         });
         // 边框设置
-        LineBorder border2 = new TextBorderUtlis(new Color(70, 70, 70), 2, false);
-        textFilePath.setBorder(border2);
-        textKey.setBorder(border2);
-        btnGenerateRandomKey.setBorder(border2);
-        progressBar.setBorder(border2);
-        btnEncryptDecrypt.setBorder(new TextBorderUtlis(new Color(70, 70, 70), 5, false));
+        setBorder();
         // 修改窗口风格为当前系统对应的风格
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -220,8 +198,9 @@ public class MainUI extends JFrame {
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(true);
-        setTitle("Crypto v0.1.3 by LZHJK");
+        setTitle("Crypto");
         setVisible(true);
+        setLocation(300, 100);
         pack();
         // 设置焦点位置
         textKey.requestFocus();
@@ -230,7 +209,7 @@ public class MainUI extends JFrame {
     /**
      * 用于后台运行加解密
      */
-    class BackRunnerCrypt implements Runnable {
+    class BW_Crypt implements Runnable {
         public void start() {
             Thread t = new Thread(this);
             t.start();
@@ -240,7 +219,7 @@ public class MainUI extends JFrame {
             boolean isError = false;
             lblStatus.setText("运行中...");
             // 再运行一个进程控制进度条
-            new BackRunnerShowProgress().start();
+            new BW_ShowProgress().start();
             try {
                 crypto.Crypt(textFilePath.getText(), textKey.getText());
             } catch (NullPointerException e) {
@@ -254,6 +233,7 @@ public class MainUI extends JFrame {
                 if (!isError)
                     lblStatus.setText("成功。");
                 btnEncryptDecrypt.setEnabled(true);
+                crypto = new Crypto();
             }
 
         }
@@ -261,7 +241,7 @@ public class MainUI extends JFrame {
         /**
          * 控制进度条的显示
          */
-        class BackRunnerShowProgress implements Runnable {
+        class BW_ShowProgress implements Runnable {
             public void start() {
                 Thread t = new Thread(this);
                 t.start();
@@ -306,6 +286,7 @@ public class MainUI extends JFrame {
         textFilePath = new JTextField();
         textFilePath.setBackground(new Color(-13487566));
         textFilePath.setForeground(new Color(-7629154));
+        textFilePath.setHorizontalAlignment(10);
         textFilePath.setText("支持拖拽文件至此");
         mainPanel.add(textFilePath, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 30), null, 0, false));
         final JLabel label1 = new JLabel();

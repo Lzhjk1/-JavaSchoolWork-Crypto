@@ -17,6 +17,7 @@
         <properties>
           <background color="-13487566"/>
           <foreground color="-7629154"/>
+          <horizontalAlignment value="10"/>
           <text value="支持拖拽文件至此"/>
         </properties>
       </component>
